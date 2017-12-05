@@ -55,32 +55,32 @@ def get_markings(N, P):
     m = np.zeros((N, P))
     return m - 1
 
-def mark(m, num=3):
+def mark_all(m, num=3, value=1):
     """
     Mark num elements in the markings
     """
 
-    m[:, :3] = 1
+    m[:, :3] = value
     return m
 
-def unmark_one(m, pos):
+def unmark_one(m, pos, value=-1):
     """
     Unmark just one element for given pos
     """
 
-    m[pos, 0] = -1
+    m[pos, 0] = value
     return m
 
-def unmark_gap(m, gap, start=10):
+def unmark_one_gap(m, gap, start=10, value=-1):
     """
     Unmark two items for one instance with a given gap
     """
 
-    m[start, 0] = -1
-    m[start + gap, 1] = -1
+    m[start, 0] = value
+    m[start + gap, 1] = value
     return m
 
-def unmark_pepper(m, noise, start=10):
+def unmark_all_noise(m, noise, start=10, value=-1):
     """
     Unmark items for each iteration starting from start using the
     noise vector
@@ -89,7 +89,7 @@ def unmark_pepper(m, noise, start=10):
     for i in range(start, len(m)):
         for j, p in enumerate(noise):
             if np.random.rand() < p:
-                m[i, j] = -1
+                m[i, j] = value
     return m
 
 def plot_mem(mem: np.ndarray, markings: np.ndarray):
