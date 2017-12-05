@@ -48,29 +48,48 @@ def run(markings: np.ndarray) -> np.ndarray:
     return mem
 
 def get_markings(N, P):
+    """
+    Return a set of marking with all unmarked
+    """
+
     m = np.zeros((N, P))
     return m - 1
 
-def gap_markings(m, gap):
-    N = len(m)
+def mark(m, num=3):
+    """
+    Mark num elements in the markings
+    """
+
     m[:, :3] = 1
-    m[N // 5, 0] = -1
-    m[(N // 5) + gap, 1] = -1
     return m
 
-def pepper_markings(m, peps, start=10):
-    for i in range(len(m)):
-        if i <= start:
-            # Fill in
-            for j, p in enumerate(peps):
-                if p > 0:
-                    m[i, j] = 1
-        else:
-            # Pepper
-            for j, p in enumerate(peps):
-                if np.random.rand() < p:
-                    m[i, j] = 1
+def unmark_one(m, pos):
+    """
+    Unmark just one element for given pos
+    """
 
+    m[pos, 0] = -1
+    return m
+
+def unmark_gap(m, gap, start=10):
+    """
+    Unmark two items for one instance with a given gap
+    """
+
+    m[start, 0] = -1
+    m[start + gap, 1] = -1
+    return m
+
+def unmark_pepper(m, noise, start=10):
+    """
+    Unmark items for each iteration starting from start using the
+    noise vector
+    """
+
+    for i in range(start, len(m)):
+        for j, p in enumerate(noise):
+            if np.random.rand() < p:
+                m[i, j] = -1
     return m
 
 def plot_mem(mem: np.ndarray, markings: np.ndarray):
@@ -86,7 +105,11 @@ def plot_mem(mem: np.ndarray, markings: np.ndarray):
     unmarked = [np.isclose(f, 0) for f in fitness]
     colors = [cmap(i) for i in range(mem.shape[1])]
 
-    f, (ax1, ax2) = plt.subplots(2, figsize=(15, 10), sharex=True)
+    mean_coeff = mem.mean(axis=1)
+
+    f, (ax1, ax2, ax3) = plt.subplots(3, figsize=(15, 15), sharex=True)
+
+    ax1.plot(mean_coeff, linewidth=2, label=f"Mean coeff over genererations")
 
     for p in range(mem.shape[1]):
         if unmarked[p]:
@@ -96,11 +119,12 @@ def plot_mem(mem: np.ndarray, markings: np.ndarray):
             color = colors[p]
             alpha = 0.7
 
-        ax1.plot(mem[:, p] ** 2, color=color, alpha=alpha, linewidth=2, label=f"{p} ({fitness[p]})")
-        ax2.plot(mem[:, p], color=color, linewidth=2, alpha=alpha, label=f"{p} ({fitness[p]})")
+        ax2.plot(mem[:, p] ** 2, color=color, alpha=alpha, linewidth=2, label=f"{p} ({fitness[p]})")
+        ax3.plot(mem[:, p], color=color, linewidth=2, alpha=alpha, label=f"{p} ({fitness[p]})")
 
-    ax1.set_title("Probability")
-    ax2.set_title("Coeff")
+    ax1.set_title("Mean coefficients")
+    ax2.set_title("Probability")
+    ax3.set_title("Coeff")
     plt.legend(loc="center left")
     plt.grid()
     plt.show()
