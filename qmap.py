@@ -60,7 +60,7 @@ def mark_all(m, num=3, value=1):
     Mark num elements in the markings
     """
 
-    m[:, :3] = value
+    m[:, :num] = value
     return m
 
 def unmark_one(m, pos, value=-1):
