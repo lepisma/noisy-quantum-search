@@ -63,12 +63,12 @@ def mark_all(m, num=3, value=1):
     m[:, :num] = value
     return m
 
-def unmark_one(m, pos, value=-1):
+def unmark_one(m, pos, value=-1, row=0):
     """
     Unmark just one element for given pos
     """
 
-    m[pos, 0] = value
+    m[pos, row] = value
     return m
 
 def unmark_one_gap(m, gap, start=10, value=-1):
