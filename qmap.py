@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
 from collections import namedtuple
 from typing import List
+import seaborn as sns
+
+plt.style.use("seaborn-white")
+sns.set_style("whitegrid")
 
 State = namedtuple("State", ["index", "coeff"])
 
@@ -92,7 +96,7 @@ def unmark_all_noise(m, noise, start=10, value=-1):
                 m[i, j] = value
     return m
 
-def plot_mem(mem: np.ndarray, markings: np.ndarray):
+def plot_mem(mem: np.ndarray, markings: np.ndarray, info, name):
     """
     Parameters:
     -----------
@@ -105,16 +109,24 @@ def plot_mem(mem: np.ndarray, markings: np.ndarray):
     unmarked = [np.isclose(f, 0) for f in fitness]
     colors = [cmap(i) for i in range(mem.shape[1])]
 
+    font = {
+        "fontname": "Source Sans Pro"
+    }
+
     mean_coeff = mem.mean(axis=1)
 
-    f, (ax1, ax2, ax3) = plt.subplots(3, figsize=(15, 15), sharex=True)
+    fig = plt.figure(figsize=(10, 6))
+    gs = matplotlib.gridspec.GridSpec(2, 1, height_ratios=[2, 1])
+    ax2 = plt.subplot(gs[0])
+    ax3 = plt.subplot(gs[1])
 
-    ax1.plot(mean_coeff, linewidth=2, label=f"Mean coeff over genererations")
+    fig.subplots_adjust(hspace=0.4)
+    # ax1.plot(mean_coeff, linewidth=2, label=f"Mean coeff over genererations")
 
     for p in range(mem.shape[1]):
         if unmarked[p]:
             color = "gray"
-            alpha = 0.1
+            alpha = 0.05
         else:
             color = colors[p]
             alpha = 0.7
@@ -122,9 +134,14 @@ def plot_mem(mem: np.ndarray, markings: np.ndarray):
         ax2.plot(mem[:, p] ** 2, color=color, alpha=alpha, linewidth=2, label=f"{p} ({fitness[p]})")
         ax3.plot(mem[:, p], color=color, linewidth=2, alpha=alpha, label=f"{p} ({fitness[p]})")
 
-    ax1.set_title("Mean coefficients")
-    ax2.set_title("Probability")
-    ax3.set_title("Coeff")
-    plt.legend(loc="center left")
+    ax2.set_ylim([0, 1])
+    ax3.set_ylim([-1, 1])
+
+    ax2.text(0, 1.05, f"{info}", name="Source Sans Pro", size=13, ha="left")
+    ax2.text(100, 1.05, f"P R O B A B I L I T Y", size=13, name="Source Sans Pro",
+             ha="right", color="gray")
+    ax3.text(100, 1.20, f"C O E F F I C I E N T S", size=13, name="Source Sans Pro",
+             ha="right", color="gray")
     plt.grid()
+    plt.savefig(f"../../Cloud/Courses/691q/project/presentation/images/{name}")
     plt.show()
