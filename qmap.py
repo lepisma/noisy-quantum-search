@@ -96,7 +96,7 @@ def unmark_all_noise(m, noise, start=10, value=-1):
                 m[i, j] = value
     return m
 
-def plot_mem(mem: np.ndarray, markings: np.ndarray, info, name):
+def plot_mem(mem: np.ndarray, markings: np.ndarray, info, name, n_marked):
     """
     Parameters:
     -----------
@@ -132,15 +132,16 @@ def plot_mem(mem: np.ndarray, markings: np.ndarray, info, name):
             alpha = 0.7
 
         ax2.plot(mem[:, p] ** 2, color=color, alpha=alpha, linewidth=2, label=f"{p} ({fitness[p]})")
-        ax3.plot(mem[:, p], color=color, linewidth=2, alpha=alpha, label=f"{p} ({fitness[p]})")
+        ax3.plot((mem[:, :n_marked] ** 2).sum(axis=1), color=color, linewidth=2, alpha=alpha, label=f"{p} ({fitness[p]})")
 
     ax2.set_ylim([0, 1])
-    ax3.set_ylim([-1, 1])
+    ax3.set_ylim([0, 1.1])
+    ax3.axhline(1, color="gray", alpha=0.5, linewidth=1)
 
     ax2.text(0, 1.05, f"{info}", name="Source Sans Pro", size=13, ha="left")
-    ax2.text(100, 1.05, f"P R O B A B I L I T Y", size=13, name="Source Sans Pro",
+    ax2.text(100, 1.05, f"A M P ** 2", size=13, name="Source Sans Pro",
              ha="right", color="gray")
-    ax3.text(100, 1.20, f"C O E F F I C I E N T S", size=13, name="Source Sans Pro",
+    ax3.text(100, 1.20, f"S U C C E S S  R A T E", size=13, name="Source Sans Pro",
              ha="right", color="gray")
     plt.grid()
     plt.savefig(f"../../Cloud/Courses/691q/project/presentation/images/{name}")
